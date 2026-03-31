@@ -33,6 +33,13 @@ function timeToMinutes(timeStr) {
   return h * 60 + m
 }
 
+function addMinutes(timeStr, minutes) {
+  const total = (timeToMinutes(timeStr) + minutes) % (24 * 60)
+  const h = Math.floor(total / 60)
+  const m = total % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
+
 function formatTime(timeStr) {
   const [h, m] = timeStr.split(':').map(Number)
   const period = h >= 12 ? 'PM' : 'AM'
@@ -43,7 +50,7 @@ function formatTime(timeStr) {
 export default function App() {
   const [ratePerHour, setRatePerHour] = useState(16)
   const [startTime, setStartTime] = useState(floorToNearest15)
-  const [endTime, setEndTime] = useState(ceilToNearest15)
+  const [endTime, setEndTime] = useState(() => addMinutes(floorToNearest15(), 60))
   const [players, setPlayers] = useState(4)
   const [showSplit, setShowSplit] = useState(false)
   const [shares, setShares] = useState([1, 1, 1, 1])
@@ -117,7 +124,14 @@ export default function App() {
               <input
                 type="time"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => {
+                  const newStart = e.target.value
+                  setStartTime(newStart)
+                  let endMin = timeToMinutes(endTime)
+                  let startMin = timeToMinutes(newStart)
+                  if (endMin <= startMin) endMin += 24 * 60
+                  if (endMin - startMin < 60) setEndTime(addMinutes(newStart, 60))
+                }}
               />
               <button className="now-btn" onClick={() => setStartTime(floorToNearest15())}>Now</button>
             </div>

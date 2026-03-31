@@ -33,6 +33,14 @@ function timeToMinutes(timeStr) {
   return h * 60 + m
 }
 
+function costToUnits(cost, ratePerHour) {
+  const totalQuarters = Math.round(cost / (ratePerHour / 4))
+  return {
+    fullHours: Math.floor(totalQuarters / 4),
+    remainingQuarters: totalQuarters % 4,
+  }
+}
+
 function addMinutes(timeStr, minutes) {
   const total = (timeToMinutes(timeStr) + minutes) % (24 * 60)
   const h = Math.floor(total / 60)
@@ -195,6 +203,11 @@ export default function App() {
                   </span>
                 </div>
               ))}
+              {activeShares.reduce((a, b) => a + b, 0) !== players && (
+                <p className="split-warning">
+                  Split totals {activeShares.reduce((a, b) => a + b, 0)} share{activeShares.reduce((a, b) => a + b, 0) !== 1 ? 's' : ''}, expected {players}.
+                </p>
+              )}
             </div>
           )}
         </section>
@@ -236,19 +249,23 @@ export default function App() {
           {showSplit ? (
             <>
               <div className="split-breakdown">
-                {activeShares.map((s, i) => (
+                {activeShares.map((s, i) => {
+                  const { fullHours, remainingQuarters } = costToUnits(splitTotals[i], ratePerHour)
+                  return (
                   <div key={i} className="split-breakdown-row">
                     <span className="split-breakdown-label">
                       Player {i + 1}
-                      {s !== 1 && (
-                        <span className="split-breakdown-note">
-                          {s === 0 ? ' (free)' : ` (×${s})`}
-                        </span>
-                      )}
+                      <span className="split-breakdown-note">
+                        {s === 0
+                          ? ' (free)'
+                          : ` — ${fullHours > 0 ? `${fullHours}h ` : ''}${remainingQuarters > 0 ? `${remainingQuarters * 15}min` : ''}`
+                        }
+                      </span>
                     </span>
                     <span className="split-breakdown-amount">${splitTotals[i].toFixed(2)}</span>
                   </div>
-                ))}
+                  )
+                })}
               </div>
               <div className="total-row">
                 <span>Total</span>

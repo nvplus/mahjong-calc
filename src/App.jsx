@@ -63,6 +63,8 @@ export default function App() {
   const [showSplit, setShowSplit] = useState(false)
   const [shares, setShares] = useState([1, 1, 1, 1])
 
+  const PLAYER_OPTIONS = [3, 4]
+
   function handleSetPlayers(n) {
     setPlayers(n)
     setShares(Array(n).fill(1))
@@ -165,7 +167,7 @@ export default function App() {
           <div className="field">
             <span className="label">Number of players</span>
             <div className="player-buttons">
-              {[1, 2, 3, 4].map((n) => (
+              {PLAYER_OPTIONS.map((n) => (
                 <button
                   key={n}
                   className={players === n ? 'active' : ''}

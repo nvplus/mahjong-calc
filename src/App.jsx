@@ -69,22 +69,23 @@ export default function App() {
     const fullHours = Math.floor(totalQuarters / 4)
     const remainingQuarters = totalQuarters % 4
 
-    const costPerPlayer = fullHours * ratePerHour + remainingQuarters * (ratePerHour / 4)
-    const totalCost = costPerPlayer * players
+    const roomCost = fullHours * ratePerHour + remainingQuarters * (ratePerHour / 4)
+    const costPerPlayer = roomCost / players
 
     return {
       roundedEnd,
       totalMin,
       fullHours,
       remainingQuarters,
+      roomCost,
       costPerPlayer,
-      totalCost,
     }
   }, [startTime, endTime, players, ratePerHour])
 
   const activeShares = shares.slice(0, players)
   const splitTotals = activeShares.map(s => s * result.costPerPlayer)
   const splitGrandTotal = splitTotals.reduce((a, b) => a + b, 0)
+
 
   return (
     <div className="app">
@@ -203,13 +204,13 @@ export default function App() {
               <div className="unit">
                 <span className="unit-count">{result.fullHours}</span>
                 <span className="unit-label">full hour{result.fullHours !== 1 ? 's' : ''}</span>
-                <span className="unit-cost">${(result.fullHours * ratePerHour).toFixed(2)}</span>
+                <span className="unit-cost">${(result.fullHours * ratePerHour / players).toFixed(2)}</span>
               </div>
               <div className="unit-sep">+</div>
               <div className="unit">
                 <span className="unit-count">{result.remainingQuarters}</span>
                 <span className="unit-label">quarter hour{result.remainingQuarters !== 1 ? 's' : ''}</span>
-                <span className="unit-cost">${(result.remainingQuarters * ratePerHour / 4).toFixed(2)}</span>
+                <span className="unit-cost">${(result.remainingQuarters * ratePerHour / 4 / players).toFixed(2)}</span>
               </div>
             </div>
             <div className="per-player-total">
@@ -243,7 +244,7 @@ export default function App() {
           ) : (
             <div className="total-row">
               <span>{players} player{players !== 1 ? 's' : ''}</span>
-              <span className="total-amount">${result.totalCost.toFixed(2)}</span>
+              <span className="total-amount">${result.roomCost.toFixed(2)}</span>
             </div>
           )}
         </section>

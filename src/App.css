@@ -161,6 +161,102 @@ input[type="number"]:focus {
   color: #fff;
 }
 
+/* Custom split toggle */
+.split-toggle {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  transition: color 0.12s;
+}
+
+.split-toggle:hover {
+  color: var(--accent);
+}
+
+.split-chevron {
+  font-size: 10px;
+}
+
+.split-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 2px;
+}
+
+.split-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.split-player-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.split-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+  height: 4px;
+  cursor: pointer;
+}
+
+.split-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Split breakdown in results */
+.split-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.split-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+.split-breakdown-label {
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.split-breakdown-note {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.split-breakdown-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
 /* Results */
 .results {
   gap: 0;

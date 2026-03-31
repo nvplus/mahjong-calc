@@ -10,7 +10,6 @@ function roundToNearest15(timeStr) {
   return `${String(rh).padStart(2, '0')}:${String(rm).padStart(2, '0')}`
 }
 
-
 function floorToNearest15() {
   const now = new Date()
   const totalMin = now.getHours() * 60 + now.getMinutes()
@@ -46,6 +45,17 @@ export default function App() {
   const [startTime, setStartTime] = useState(floorToNearest15)
   const [endTime, setEndTime] = useState(ceilToNearest15)
   const [players, setPlayers] = useState(4)
+  const [showSplit, setShowSplit] = useState(false)
+  const [shares, setShares] = useState([1, 1, 1, 1])
+
+  function handleSetPlayers(n) {
+    setPlayers(n)
+    setShares(Array(n).fill(1))
+  }
+
+  function handleShareChange(i, val) {
+    setShares(prev => prev.map((s, idx) => idx === i ? val : s))
+  }
 
   const result = useMemo(() => {
     const roundedEnd = roundToNearest15(endTime)
@@ -72,9 +82,9 @@ export default function App() {
     }
   }, [startTime, endTime, players, ratePerHour])
 
-  const handleEndTimeChange = (e) => {
-    setEndTime(e.target.value)
-  }
+  const activeShares = shares.slice(0, players)
+  const splitTotals = activeShares.map(s => s * result.costPerPlayer)
+  const splitGrandTotal = splitTotals.reduce((a, b) => a + b, 0)
 
   return (
     <div className="app">
@@ -118,7 +128,7 @@ export default function App() {
               <input
                 type="time"
                 value={endTime}
-                onChange={handleEndTimeChange}
+                onChange={(e) => setEndTime(e.target.value)}
               />
               <button className="now-btn" onClick={() => setEndTime(ceilToNearest15())}>Now</button>
             </div>
@@ -136,13 +146,42 @@ export default function App() {
                 <button
                   key={n}
                   className={players === n ? 'active' : ''}
-                  onClick={() => setPlayers(n)}
+                  onClick={() => handleSetPlayers(n)}
                 >
                   {n}
                 </button>
               ))}
             </div>
           </div>
+
+          <button
+            className="split-toggle"
+            onClick={() => setShowSplit(v => !v)}
+          >
+            Custom split
+            <span className="split-chevron">{showSplit ? '▲' : '▼'}</span>
+          </button>
+
+          {showSplit && (
+            <div className="split-sliders">
+              {activeShares.map((s, i) => (
+                <div key={i} className="split-row">
+                  <span className="split-player-label">Player {i + 1}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={4}
+                    step={1}
+                    value={s}
+                    onChange={(e) => handleShareChange(i, Number(e.target.value))}
+                  />
+                  <span className="split-value">
+                    {s === 0 ? 'free' : `×${s}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="card results">
@@ -179,10 +218,34 @@ export default function App() {
             </div>
           </div>
 
-          <div className="total-row">
-            <span>{players} player{players !== 1 ? 's' : ''}</span>
-            <span className="total-amount">${result.totalCost.toFixed(2)}</span>
-          </div>
+          {showSplit ? (
+            <>
+              <div className="split-breakdown">
+                {activeShares.map((s, i) => (
+                  <div key={i} className="split-breakdown-row">
+                    <span className="split-breakdown-label">
+                      Player {i + 1}
+                      {s !== 1 && (
+                        <span className="split-breakdown-note">
+                          {s === 0 ? ' (free)' : ` (×${s})`}
+                        </span>
+                      )}
+                    </span>
+                    <span className="split-breakdown-amount">${splitTotals[i].toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="total-row">
+                <span>Total</span>
+                <span className="total-amount">${splitGrandTotal.toFixed(2)}</span>
+              </div>
+            </>
+          ) : (
+            <div className="total-row">
+              <span>{players} player{players !== 1 ? 's' : ''}</span>
+              <span className="total-amount">${result.totalCost.toFixed(2)}</span>
+            </div>
+          )}
         </section>
       </main>
     </div>

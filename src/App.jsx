@@ -195,7 +195,7 @@ export default function App() {
                   <input
                     type="range"
                     min={0}
-                    max={4}
+                    max={players}
                     step={1}
                     value={s}
                     onChange={(e) => handleShareChange(i, Number(e.target.value))}
